@@ -17,4 +17,4 @@ r2d2-diesel = "*"
 [dependencies.rocket_contrib]
 version = "*"
 default-features = false
-features = ["json"]
+features = ["json", "handlebars_templates"]

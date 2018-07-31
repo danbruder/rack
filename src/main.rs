@@ -1,20 +1,26 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 extern crate rocket;
-#[macro_use] extern crate rocket_contrib;
-#[macro_use] extern crate serde_derive;
-use rocket_contrib::{Json, Value};
+#[macro_use]
+extern crate rocket_contrib;
+#[macro_use]
+extern crate serde_derive;
+use rocket_contrib::{Json, Template, Value};
 mod client;
-use client::{NewClient, Client};
-#[macro_use] extern crate diesel;
+use client::{Client, NewClient};
+#[macro_use]
+extern crate diesel;
 extern crate r2d2;
 extern crate r2d2_diesel;
 mod db;
+use std::collections::HashMap;
 mod schema;
 
 #[post("/", data = "<client>")]
 fn create(client: Json<NewClient>, connection: db::Connection) -> Json<Client> {
-    let insert = NewClient { ..client.into_inner() };
+    let insert = NewClient {
+        ..client.into_inner()
+    };
     Json(Client::create(insert, &connection))
 }
 
@@ -25,7 +31,10 @@ fn read(connection: db::Connection) -> Json<Value> {
 
 #[put("/<id>", data = "<client>")]
 fn update(id: i32, client: Json<Client>, connection: db::Connection) -> Json<Value> {
-    let update = Client { id: id, ..client.into_inner() };
+    let update = Client {
+        id: id,
+        ..client.into_inner()
+    };
     Json(json!({
         "success": Client::update(id, update, &connection)
     }))
@@ -33,14 +42,20 @@ fn update(id: i32, client: Json<Client>, connection: db::Connection) -> Json<Val
 
 #[delete("/<id>")]
 fn delete(id: i32, connection: db::Connection) -> Json<Value> {
-    Json(json!({
-        "success": Client::delete(id, &connection)
-    }))
+    Json(json!({ "success": Client::delete(id, &connection) }))
+}
+
+#[get("/register")]
+fn register() -> Template {
+    let context: HashMap<char, usize> = HashMap::new();
+    Template::render("register", context)
 }
 
 fn main() {
     rocket::ignite()
         .manage(db::connect())
-        .mount("/", routes![create, read, update, delete])
+        .attach(Template::fairing())
+        .mount("/", routes![register])
+        .mount("/clients", routes![create, read, update, delete])
         .launch();
 }
