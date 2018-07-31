@@ -16,6 +16,8 @@ extern crate r2d2_diesel;
 mod db;
 use std::collections::{BTreeMap, HashMap};
 mod schema;
+extern crate tera;
+use tera::Context;
 
 #[post("/", data = "<client>")]
 fn create(client: Json<NewClient>, connection: db::Connection) -> Json<Client> {
@@ -48,18 +50,18 @@ fn delete(id: i32, connection: db::Connection) -> Json<Value> {
 
 // Registration
 #[get("/")]
-fn home() -> Template {
-    let mut context = BTreeMap::new();
-    context.insert("register_path".to_string(), "/register".to_string());
+fn home(connection: db::Connection) -> Template {
+    let mut context = Context::new();
+    context.add("clients", &Client::read(&connection));
+    context.add("register_path", &"/register".to_string());
     Template::render("index", context)
 }
 
 // Registration
 #[get("/register")]
 fn register() -> Template {
-    let mut context = BTreeMap::new();
-    context.insert("world".to_string(), "世界!".to_string());
-    context.insert("register_path".to_string(), "/register".to_string());
+    let mut context = Context::new();
+    context.insert("register_path", &"/register".to_string());
     Template::render("register", context)
 }
 

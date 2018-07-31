@@ -1,2 +1,5 @@
 <h1>Home</h1>
 <a href="{{register_path}}">Register for an account</a>
+{% for client in clients %}
+  <li>{{ client.name }}</li>
+{% endfor %}
