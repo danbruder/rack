@@ -11,7 +11,7 @@ pub struct Client {
 }
 
 #[table_name = "clients"]
-#[derive(Deserialize, Insertable, AsChangeset)]
+#[derive(FromForm, Deserialize, Insertable, AsChangeset)]
 pub struct NewClient {
     pub name: String,
 }
