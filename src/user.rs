@@ -1,4 +1,5 @@
 use account::NewRegistration;
+use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
@@ -27,9 +28,13 @@ impl User {
         user: &NewRegistration,
         connection: &MysqlConnection,
     ) -> Result<User, result::Error> {
+        let hashed = match hash(&user.password, DEFAULT_COST) {
+            Ok(h) => h,
+            Err(err) => return Err(String::from("Could not hash password")),
+        };
         let insert = NewUser {
             name: user.name.clone(),
-            password_hash: "fds".to_string(),
+            password_hash: hashed,
             email: user.email.clone(),
         };
 
