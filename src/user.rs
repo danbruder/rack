@@ -1,10 +1,27 @@
 use account::NewRegistration;
-use bcrypt::{hash, verify, DEFAULT_COST};
+extern crate bcrypt;
+use bcrypt::{hash, verify, BcryptError, DEFAULT_COST};
 use diesel;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 use diesel::result;
 use schema::users;
+
+pub enum UserCreateError {
+    DbError(diesel::result::Error),
+    HashError(bcrypt::BcryptError),
+}
+
+impl From<diesel::result::Error> for UserCreateError {
+    fn from(e: diesel::result::Error) -> UserCreateError {
+        UserCreateError::DbError(e)
+    }
+}
+impl From<bcrypt::BcryptError> for UserCreateError {
+    fn from(e: bcrypt::BcryptError) -> UserCreateError {
+        UserCreateError::HashError(e)
+    }
+}
 
 #[table_name = "users"]
 #[derive(Serialize, Deserialize, Queryable, Insertable, AsChangeset)]
@@ -27,14 +44,10 @@ impl User {
     pub fn register(
         user: &NewRegistration,
         connection: &MysqlConnection,
-    ) -> Result<User, result::Error> {
-        //let hashed = match hash(&user.password, DEFAULT_COST) {
-        //Ok(h) => h,
-        //Err(err) => return Err(String::from("Could not hash password")),
-        //};
+    ) -> Result<User, UserCreateError> {
         let insert = NewUser {
             name: user.name.clone(),
-            password_hash: "hey".to_string(),
+            password_hash: hash(&user.password, DEFAULT_COST)?,
             email: user.email.clone(),
         };
 

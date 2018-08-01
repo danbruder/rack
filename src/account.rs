@@ -6,6 +6,7 @@ use rocket::response::status;
 use rocket::response::Flash;
 use rocket_contrib::Template;
 use tera::Context;
+use user::UserCreateError::{DbError, HashError};
 use user::{NewUser, User};
 
 #[derive(FromForm)]
@@ -42,7 +43,10 @@ fn register_post(
         Err(error) => {
             let path = &"/register";
             let command = format!("Turbolinks.clearCache(); Turbolinks.visit('{}')", path);
-            Ok(Flash::error(command, format!("{}", &error)))
+            match error {
+                DbError(err) => Ok(Flash::error(command, format!("{}", &err))),
+                HashError(err) => Ok(Flash::error(command, format!("{}", &err))),
+            }
         }
     }
 }
