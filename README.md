@@ -2,4 +2,4 @@
 
 Rust/Rocket webapp
 
-![](https://github.com/danbruder/rack/master/raw/screenshot.jpg)
+![](https://github.com/danbruder/rack/raw/master/screenshot.jpg)
