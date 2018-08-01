@@ -28,13 +28,13 @@ impl User {
         user: &NewRegistration,
         connection: &MysqlConnection,
     ) -> Result<User, result::Error> {
-        let hashed = match hash(&user.password, DEFAULT_COST) {
-            Ok(h) => h,
-            Err(err) => return Err(String::from("Could not hash password")),
-        };
+        //let hashed = match hash(&user.password, DEFAULT_COST) {
+        //Ok(h) => h,
+        //Err(err) => return Err(String::from("Could not hash password")),
+        //};
         let insert = NewUser {
             name: user.name.clone(),
-            password_hash: hashed,
+            password_hash: "hey".to_string(),
             email: user.email.clone(),
         };
 
