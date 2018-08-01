@@ -1,0 +1,33 @@
+{% extends "base" %}
+{% block title %}Register{% endblock title %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+  <div class="bg-full flex justify-center items-center">
+    <div class="bg-white w-100 mw6 pa3 br1 shadow-4">
+      <h1 class=" ma0 pa0 f3">Register</h1>
+      <p class="lh-copy">Register for a new account</p>
+      {% if flash %}
+        <div class="flex items-center ph3 pa2 bg-washed-red">
+        <i data-feather="alert-octagon"></i>
+        <p class="ml2">{{flash}}</p>
+        </div>
+      {% endif %}
+      <form class="pt3" action="{{register_path}}" method="POST">
+        <div class="mt3 w-100">
+          <label class="db fw6 lh-copy f6" for="name">Name</label>
+          <input class="border-box pa2 input-reset ba bg-transparent w-100" type="name" name="name">
+        </div>
+        <div class="mt3 w-100">
+          <label class="db fw6 lh-copy f6" for="email">Email</label>
+          <input class="border-box pa2 input-reset ba bg-transparent w-100" type="email" name="email">
+        </div>
+        <div class="mt3 w-100">
+          <label class="db fw6 lh-copy f6" for="email">Password</label>
+          <input class="border-box pa2 input-reset ba bg-transparent w-100" type="password" name="password">
+        </div>
+        <input class="ba bw1 b--black ttu fw5  pa2 ph4   mt3 " type="submit" value="Submit"/>
+      </form>
+    </div>
+  </div>
+{% endblock content %}
